@@ -15,7 +15,8 @@
 import urwid
 
 from gertty import keymap
-from gertty.view.diff import *
+from gertty.view.diff import BaseDiffComment, BaseDiffCommentEdit, BaseDiffLine
+from gertty.view.diff import BaseFileHeader, BaseDiffView, LineContext
 
 LN_COL_WIDTH = 5
 

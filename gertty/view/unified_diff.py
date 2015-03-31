@@ -16,7 +16,8 @@
 import urwid
 
 from gertty import gitrepo
-from gertty.view.diff import *
+from gertty.view.diff import BaseDiffCommentEdit, BaseDiffComment, BaseDiffLine
+from gertty.view.diff import BaseFileHeader, BaseDiffView, LineContext
 
 LN_COL_WIDTH = 5
 
