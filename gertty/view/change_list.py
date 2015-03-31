@@ -33,7 +33,6 @@ class ThreadStack(object):
         self.stack.append([change, children])
 
     def pop(self):
-        change = None
         while self.stack:
             if self.stack[-1][1]:
                 # handle children at the tip

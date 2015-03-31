@@ -344,7 +344,7 @@ class SyncChangeByCommitTask(Task):
 
     def run(self, sync):
         app = sync.app
-        with app.db.getSession() as session:
+        with app.db.getSession():
             query = 'commit:%s' % self.commit
         changes = sync.get('changes/?q=%s' % query)
         self.log.debug('Query: %s ' % (query,))
@@ -364,7 +364,7 @@ class SyncChangeByNumberTask(Task):
 
     def run(self, sync):
         app = sync.app
-        with app.db.getSession() as session:
+        with app.db.getSession():
             query = '%s' % self.number
         changes = sync.get('changes/?q=%s' % query)
         self.log.debug('Query: %s ' % (query,))
@@ -873,9 +873,9 @@ class ChangeCommitMessageTask(Task):
             revision.pending_message = False
             data = dict(message=revision.message)
             # Inside db session for rollback
-            ret = sync.post('changes/%s/revisions/%s/message' %
-                            (revision.change.id, revision.commit),
-                            data)
+            sync.post('changes/%s/revisions/%s/message' %
+                      (revision.change.id, revision.commit),
+                      data)
             change_id = revision.change.id
         sync.submitTask(SyncChangeTask(change_id, priority=self.priority))
 
