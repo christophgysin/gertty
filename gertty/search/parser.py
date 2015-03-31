@@ -242,7 +242,7 @@ def SearchParser():
             filters = []
             filters.append(gertty.db.revision_table.c.change_key == gertty.db.change_table.c.key)
             filters.append(gertty.db.message_table.c.revision_key == gertty.db.revision_table.c.key)
-            filters.append(gertty.db.message_table.c.draft == True)
+            filters.append(gertty.db.message_table.c.draft is True)
             s = select([gertty.db.change_table.c.key], correlate=False).where(and_(*filters))
             p[0] = gertty.db.change_table.c.key.in_(s)
         else:
@@ -271,7 +271,7 @@ def SearchParser():
         elif p[2] == 'owner':
             p[0] = gertty.db.account_table.c.username == username
         elif p[2] == 'starred':
-            p[0] = gertty.db.change_table.c.starred == True
+            p[0] = gertty.db.change_table.c.starred is True
         elif p[2] == 'reviewer':
             filters = []
             filters.append(gertty.db.approval_table.c.change_key == gertty.db.change_table.c.key)
