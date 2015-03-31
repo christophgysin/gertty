@@ -18,6 +18,7 @@ import urlparse
 
 
 class FormAuth(requests.auth.AuthBase):
+
     def __init__(self, username, password):
         self.username = username
         self.password = password

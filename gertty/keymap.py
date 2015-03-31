@@ -135,12 +135,15 @@ FORMAT_SUBS = (
     (re.compile('([a-z][a-z]+)'), lambda x: string.upper(x.group(1))),
     )
 
+
 def formatKey(key):
     for subre, repl in FORMAT_SUBS:
         key = subre.sub(repl, key)
     return key
 
+
 class KeyMap(object):
+
     def __init__(self, config):
         # key -> [commands]
         self.keymap = {}
@@ -176,7 +179,7 @@ class KeyMap(object):
         for key, commands in self.keymap.items():
             for command in commands:
                 if command in URWID_COMMANDS:
-                    urwid.command_map[key]=command
+                    urwid.command_map[key] = command
 
     def formatKeys(self, command):
         keys = self.getKeys(command)

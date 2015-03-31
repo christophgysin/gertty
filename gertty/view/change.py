@@ -27,16 +27,18 @@ from gertty.view import unified_diff as view_unified_diff
 from gertty.view import mouse_scroll_decorator
 import gertty.view
 
+
 class EditTopicDialog(mywid.ButtonDialog):
     signals = ['save', 'cancel']
+
     def __init__(self, app, topic):
         self.app = app
         save_button = mywid.FixedButton('Save')
         cancel_button = mywid.FixedButton('Cancel')
         urwid.connect_signal(save_button, 'click',
-                             lambda button:self._emit('save'))
+                             lambda button: self._emit('save'))
         urwid.connect_signal(cancel_button, 'click',
-                             lambda button:self._emit('cancel'))
+                             lambda button: self._emit('cancel'))
         super(EditTopicDialog, self).__init__("Edit Topic",
                                               "Edit the change topic.",
                                               entry_prompt="Topic: ",
@@ -52,15 +54,17 @@ class EditTopicDialog(mywid.ButtonDialog):
             return None
         return r
 
+
 class CherryPickDialog(urwid.WidgetWrap):
     signals = ['save', 'cancel']
+
     def __init__(self, change):
         save_button = mywid.FixedButton('Propose Change')
         cancel_button = mywid.FixedButton('Cancel')
         urwid.connect_signal(save_button, 'click',
-                             lambda button:self._emit('save'))
+                             lambda button: self._emit('save'))
         urwid.connect_signal(cancel_button, 'click',
-                             lambda button:self._emit('cancel'))
+                             lambda button: self._emit('cancel'))
         button_widgets = [('pack', save_button),
                           ('pack', cancel_button)]
         button_columns = urwid.Columns(button_widgets, dividechars=2)
@@ -82,8 +86,10 @@ class CherryPickDialog(urwid.WidgetWrap):
         super(CherryPickDialog, self).__init__(urwid.LineBox(fill,
                                                              'Propose Change to Branch'))
 
+
 class ReviewDialog(urwid.WidgetWrap):
     signals = ['submit', 'save', 'cancel']
+
     def __init__(self, revision_row):
         self.revision_row = revision_row
         self.change_view = revision_row.change_view
@@ -92,11 +98,11 @@ class ReviewDialog(urwid.WidgetWrap):
         submit_button = mywid.FixedButton(u'Save and Submit')
         cancel_button = mywid.FixedButton(u'Cancel')
         urwid.connect_signal(save_button, 'click',
-            lambda button:self._emit('save'))
+            lambda button: self._emit('save'))
         urwid.connect_signal(submit_button, 'click',
-            lambda button:self._emit('submit'))
+            lambda button: self._emit('submit'))
         urwid.connect_signal(cancel_button, 'click',
-            lambda button:self._emit('cancel'))
+            lambda button: self._emit('cancel'))
 
         buttons = [('pack', save_button)]
         if revision_row.can_submit:
@@ -192,6 +198,7 @@ class ReviewDialog(urwid.WidgetWrap):
             return None
         return r
 
+
 class ReviewButton(mywid.FixedButton):
     def __init__(self, revision_row):
         super(ReviewButton, self).__init__(('revision-button', u'Review'))
@@ -216,6 +223,7 @@ class ReviewButton(mywid.FixedButton):
         self.dialog.save(upload, submit)
         self.change_view.app.backScreen()
 
+
 class RevisionRow(urwid.WidgetWrap):
     revision_focus_map = {
                           'revision-name': 'focused-revision-name',
@@ -232,7 +240,7 @@ class RevisionRow(urwid.WidgetWrap):
         self.project_name = revision.change.project.name
         self.commit_sha = revision.commit
         self.can_submit = revision.can_submit
-        self.title = mywid.TextButton(u'', on_press = self.expandContract)
+        self.title = mywid.TextButton(u'', on_press=self.expandContract)
         stats = repo.diffstat(revision.parent, revision.commit)
         table = mywid.Table(columns=3)
         total_added = 0
@@ -258,7 +266,7 @@ class RevisionRow(urwid.WidgetWrap):
                       urwid.Text(('lines-removed', '-%i' % (total_removed,)))])
         table = urwid.Padding(table, width='pack')
 
-        focus_map={'revision-button': 'focused-revision-button'}
+        focus_map = {'revision-button': 'focused-revision-button'}
         self.review_button = ReviewButton(self)
         buttons = [self.review_button,
                    mywid.FixedButton(('revision-button', "Diff"),
@@ -291,11 +299,11 @@ class RevisionRow(urwid.WidgetWrap):
             pending_message = revision.getPendingMessage()
             if not pending_message:
                 line.append(('revision-drafts', ' (%s draft%s)' % (
-                            num_drafts, num_drafts>1 and 's' or '')))
+                            num_drafts, num_drafts > 1 and 's' or '')))
         num_comments = len(revision.comments) - num_drafts
         if num_comments:
             line.append(('revision-comments', ' (%s inline comment%s)' % (
-                        num_comments, num_comments>1 and 's' or '')))
+                        num_comments, num_comments > 1 and 's' or '')))
         self.title.text.set_text(line)
 
     def expandContract(self, button):
@@ -314,10 +322,10 @@ class RevisionRow(urwid.WidgetWrap):
         try:
             repo.checkout(self.commit_sha)
             dialog = mywid.MessageDialog('Checkout', 'Change checked out in %s' % repo.path)
-            min_height=8
+            min_height = 8
         except gitrepo.GitCheckoutError as e:
             dialog = mywid.MessageDialog('Error', e.msg)
-            min_height=12
+            min_height = 12
         urwid.connect_signal(dialog, 'close',
             lambda button: self.app.backScreen())
         self.app.popup(dialog, min_height=min_height)
@@ -327,13 +335,14 @@ class RevisionRow(urwid.WidgetWrap):
         try:
             repo.cherryPick(self.commit_sha)
             dialog = mywid.MessageDialog('Cherry-Pick', 'Change cherry-picked in %s' % repo.path)
-            min_height=8
+            min_height = 8
         except gitrepo.GitCheckoutError as e:
             dialog = mywid.MessageDialog('Error', e.msg)
-            min_height=12
+            min_height = 12
         urwid.connect_signal(dialog, 'close',
             lambda button: self.app.backScreen())
         self.app.popup(dialog, min_height=min_height)
+
 
 class ChangeButton(mywid.FixedButton):
     button_left = urwid.Text(u' ')
@@ -353,6 +362,7 @@ class ChangeButton(mywid.FixedButton):
     def openChange(self):
         self.change_view.app.changeScreen(ChangeView(self.change_view.app, self.change_key))
 
+
 class ChangeMessageBox(mywid.HyperText):
     def __init__(self, app, message):
         super(ChangeMessageBox, self).__init__(u'')
@@ -367,7 +377,7 @@ class ChangeMessageBox(mywid.HyperText):
             lines.insert(0, '')
             lines.insert(0, 'Patch Set %s:' % (message.revision.number,))
         text = [('change-message-name', message.author_name),
-                ('change-message-header', ': '+lines.pop(0)),
+                ('change-message-header', ': ' + lines.pop(0)),
                 ('change-message-header',
                  created.strftime(' (%Y-%m-%d %H:%M:%S%z)'))]
         if message.draft and not message.pending:
@@ -377,9 +387,11 @@ class ChangeMessageBox(mywid.HyperText):
         comment_text = ['\n'.join(lines)]
         for commentlink in self.app.config.commentlinks:
             comment_text = commentlink.run(self.app, comment_text)
-        self.set_text(text+comment_text)
+        self.set_text(text + comment_text)
+
 
 class CommitMessageBox(mywid.HyperText):
+
     def __init__(self, app, message):
         self.app = app
         super(CommitMessageBox, self).__init__(message)
@@ -390,8 +402,10 @@ class CommitMessageBox(mywid.HyperText):
             text = commentlink.run(self.app, text)
         super(CommitMessageBox, self).set_text(text)
 
+
 @mouse_scroll_decorator.ScrollByWheel
 class ChangeView(urwid.WidgetWrap):
+
     def help(self):
         key = self.app.config.keymap.formatKeys
         ret = [
@@ -459,7 +473,7 @@ class ChangeView(urwid.WidgetWrap):
         self.updated_label = urwid.Text(u'', wrap='clip')
         self.status_label = urwid.Text(u'', wrap='clip')
         change_info = []
-        change_info_map={'change-data': 'focused-change-data'}
+        change_info_map = {'change-data': 'focused-change-data'}
         for l, v in [("Change-Id", self.change_id_label),
                      ("Owner", urwid.Padding(urwid.AttrMap(self.owner_label, None,
                                                            focus_map=change_info_map),
@@ -481,7 +495,7 @@ class ChangeView(urwid.WidgetWrap):
         self.needed_by = urwid.Pile([])
         self.needed_by_rows = {}
         self.related_changes = urwid.Pile([self.depends_on, self.needed_by])
-        self.results = mywid.HyperText(u'') # because it scrolls better than a table
+        self.results = mywid.HyperText(u'')  # because it scrolls better than a table
         self.grid = mywid.MyGridFlow([change_info, self.commit_message, votes, self.results],
                                      cell_width=80, h_sep=2, v_sep=1, align='left')
         self.listbox = urwid.ListBox(urwid.SimpleFocusListWalker([]))
@@ -637,7 +651,7 @@ class ChangeView(urwid.WidgetWrap):
                 row = self.revision_rows.get(revision.key)
                 if not row:
                     row = RevisionRow(self.app, self, repo, revision,
-                                      expanded=(revno==len(change.revisions)-1))
+                                      expanded=(revno == len(change.revisions) - 1))
                     self.listbox.body.insert(listbox_index, row)
                     self.revision_rows[revision.key] = row
                 row.update(revision)
@@ -757,7 +771,6 @@ class ChangeView(urwid.WidgetWrap):
         self._updateDependenciesWidget(children,
                                        self.needed_by, self.needed_by_rows,
                                        header='Needed by:')
-
 
     def toggleReviewed(self):
         with self.app.db.getSession() as session:
@@ -954,7 +967,6 @@ class ChangeView(urwid.WidgetWrap):
         self.app.popup(dialog,
                        relative_width=50, relative_height=75,
                        min_width=60, min_height=20)
-
 
     def doCherryPickChange(self, dialog):
         cp_key = None
