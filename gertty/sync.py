@@ -124,7 +124,8 @@ class ChangeAddedEvent(UpdateEvent):
 
 class ChangeUpdatedEvent(UpdateEvent):
     def __repr__(self):
-        return '<ChangeUpdatedEvent project_key:%s change_key:%s review_flag_changed:%s status_changed:%s>' % (
+        return '<ChangeUpdatedEvent project_key:%s change_key:%s ' \
+               'review_flag_changed:%s status_changed:%s>' % (
             self.project_key, self.change_key, self.review_flag_changed, self.status_changed)
 
     def __init__(self, change):
@@ -388,10 +389,14 @@ class SyncChangeTask(Task):
     def run(self, sync):
         start_time = time.time()
         app = sync.app
-        remote_change = sync.get('changes/%s?o=DETAILED_LABELS&o=ALL_REVISIONS&o=ALL_COMMITS&o=MESSAGES&o=DETAILED_ACCOUNTS&o=CURRENT_ACTIONS' % self.change_id)
+        remote_change = sync.get('changes/%s?o=DETAILED_LABELS&o=ALL_REVISIONS'
+                                 '&o=ALL_COMMITS&o=MESSAGES&o=DETAILED_ACCOUNTS'
+                                 '&o=CURRENT_ACTIONS'
+                                 % self.change_id)
         # Perform subqueries this task will need outside of the db session
         for remote_commit, remote_revision in remote_change.get('revisions', {}).items():
-            remote_comments_data = sync.get('changes/%s/revisions/%s/comments' % (self.change_id, remote_commit))
+            remote_comments_data = sync.get('changes/%s/revisions/%s/comments'
+                                            % (self.change_id, remote_commit))
             remote_revision['_gertty_remote_comments_data'] = remote_comments_data
         fetches = collections.defaultdict(list)
         parent_commits = set()
@@ -458,7 +463,11 @@ class SyncChangeTask(Task):
                                                      remote_revision['commit']['message'], remote_commit,
                                                      remote_revision['commit']['parents'][0]['commit'],
                                                      auth, ref)
-                    self.log.info("Created new revision %s for change %s revision %s in local DB.", revision.key, self.change_id, remote_revision['_number'])
+                    self.log.info("Created new revision %s for change %s "
+                                  "revision %s in local DB.",
+                                  revision.key,
+                                  self.change_id,
+                                  remote_revision['_number'])
                     new_revision = True
                 revision.message = remote_revision['commit']['message']
                 actions = remote_revision.get('actions', {})
@@ -492,7 +501,9 @@ class SyncChangeTask(Task):
                                                              created,
                                                              remote_file, parent, remote_comment.get('line'),
                                                              remote_comment['message'])
-                            self.log.info("Created new comment %s for revision %s in local DB.", comment.key, revision.key)
+                            self.log.info("Created new comment %s for revision "
+                                          "%s in local DB.",
+                                          comment.key, revision.key)
                         else:
                             if comment.author != account:
                                 comment.author = account
@@ -515,9 +526,14 @@ class SyncChangeTask(Task):
                         created = dateutil.parser.parse(remote_message['date'])
                         message = revision.createMessage(remote_message['id'], account, created,
                                                      remote_message['message'])
-                        self.log.info("Created new review message %s for revision %s in local DB.", message.key, revision.key)
+                        self.log.info("Created new review message %s for "
+                                      "revision %s in local DB.",
+                                      message.key, revision.key)
                     else:
-                        self.log.info("Unable to create new review message for revision %s because it is not in local DB (draft?).", remote_message.get('_revision_number'))
+                        self.log.info("Unable to create new review message for "
+                                      "revision %s because it is not in local "
+                                      "DB (draft?).",
+                                      remote_message.get('_revision_number'))
                 else:
                     if message.author != account:
                         message.author = account
@@ -531,7 +547,8 @@ class SyncChangeTask(Task):
                     remote_approval['category'] = remote_label_name
                     key = '%s~%s' % (remote_approval['category'], remote_approval['_account_id'])
                     remote_approval_entries[key] = remote_approval
-                    if remote_approval['_account_id'] == sync.account_id and int(remote_approval['value']) != 0:
+                    if remote_approval['_account_id'] == sync.account_id \
+                            and int(remote_approval['value']) != 0:
                         user_voted = True
                 for key, value in remote_label_dict.get('values', {}).items():
                     # +1: "LGTM"
