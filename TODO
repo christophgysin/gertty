@@ -1,0 +1,15 @@
+auth-type: form
+  - config option:
+    - auth-form-path (=/login)
+    - auth-form-field-user (=username)
+    - auth-form-field-pass (=password)
+
+other:
+  - remove mouse click binding
+  - disable confirmation dialog
+  - password prompt on --no-sync?
+  - config file include, to keep passwords separate
+  - high color palette
+  - sync only my reviews, not all
+  - speed up displaying project list
+  - client/server
